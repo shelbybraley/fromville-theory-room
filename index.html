@@ -170,7 +170,7 @@ let moving=null,start=null;
 $('decorLayer').addEventListener('pointerdown',e=>{
  const el=e.target.closest('.room-decoration');if(!el||e.target.closest('[data-remove-decor]'))return;
  moving=prefs.decor.find(d=>d.id===el.dataset.decorId);if(!moving)return;
- const r=$('roomWall').getBoundingClientRect();start={x:e.clientX,y:e.clientY,w:r.width,h:r.height,px:moving.x,py:moving.y};e.preventDefault();
+ const r=$('roomWall').getBoundingClientRect();start={x:e.clientX,y:e.clientY,w:r.width,h:r.height,px:moving.x,py:moving.y};el.setPointerCapture(e.pointerId);e.preventDefault();
 });
 $('decorLayer').addEventListener('pointermove',e=>{
  if(!moving||!start)return;
