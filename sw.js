@@ -1,4 +1,4 @@
-const CACHE='fromville-theory-room-v7';
+const CACHE='fromville-theory-room-v8';
 const FILES=['./','./index.html','./manifest.webmanifest','./room3d.css','./room3d.js','./board3d.css','./board3d.js','./room-layout.css','./icon-192.png','./icon-512.png'];
 self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(FILES))));
 self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k))))));
