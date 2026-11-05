@@ -25,16 +25,50 @@ button,input,textarea,select{font:inherit}button{border:1px solid var(--line);ba
 .hidden{display:none!important}.footer{font-size:11px;color:var(--muted);margin-top:16px;line-height:1.5}
 @media(max-width:520px){.row{grid-template-columns:1fr}.board{padding:10px;grid-template-columns:1fr 1fr;gap:9px}.note{min-height:150px;padding:16px 9px 9px}.note textarea{font-size:12px}}
 @media(max-width:350px){.board{grid-template-columns:1fr}}
+
+/* Cozy detective-room makeover */
+:root{--bg:#171311;--panel:#30251f;--muted:#d5c0a9;--accent:#bd7651;--line:#70513e;--glow:#ffdca0}
+body{background:radial-gradient(ellipse at 50% -8%,#654936 0,#30241e 35%,#171311 78%);background-attachment:fixed}
+main{position:relative}
+.head{padding:12px 13px 16px;border:1px solid #8c694b55;border-radius:16px;background:linear-gradient(135deg,#30231cdd,#211914dd);box-shadow:0 10px 35px #0006}
+h1{color:#ffe7c5;text-shadow:0 0 18px #f2b56a66;letter-spacing:.04em}
+.sub{color:#d9bda0}
+.toolbar{margin-top:14px}
+button{background:#443126;border-color:#806047;box-shadow:0 2px 8px #0003}
+button.primary{background:linear-gradient(135deg,#b96d48,#8f4935);border-color:#c48660}
+.board{position:relative;overflow:hidden;background-color:#63442f;background-image:linear-gradient(#ffffff08 1px,transparent 1px),radial-gradient(#d7ad7c55 .8px,transparent 1px);background-size:100% 5px,14px 14px;border:8px solid #38251c;border-radius:13px;box-shadow:inset 0 0 35px #1c100b99,0 12px 28px #0007}
+.note{box-shadow:2px 6px 12px #0009;border-radius:2px 2px 5px 5px}
+.note:nth-child(5n+1){background:#f5e2b5}.note:nth-child(5n+2){background:#f3c9c4}.note:nth-child(5n+3){background:#dce7c8}.note:nth-child(5n+4){background:#cbdfea}.note:nth-child(5n){background:#f4d7b5}
+.panel{background:linear-gradient(145deg,#35271f,#261d18);border-color:#75543e;box-shadow:0 8px 24px #0004}
+.cozy-lights{height:28px;display:flex;align-items:flex-start;justify-content:space-around;position:relative;margin:2px 8px 12px;filter:drop-shadow(0 0 5px #ffd88c)}
+.cozy-lights:before{content:"";position:absolute;left:0;right:0;top:5px;height:12px;border-top:2px solid #94704c;border-radius:50%}
+.cozy-lights i{z-index:1;width:9px;height:13px;border-radius:50% 50% 45% 45%;background:var(--bulb,#ffd88c);box-shadow:0 0 7px 3px var(--bulb,#ffd88c),0 0 18px 5px #ffd88c66;margin-top:8px}
+.cozy-lights.off{filter:none;opacity:.25}
+.room-tools{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:10px 0 14px;padding:10px 12px;background:#2b211b;border:1px solid #6e4f3a;border-radius:12px}
+.room-tools strong{font-size:12px;color:#e9c8a5;margin-right:3px}
+.room-tools button{font-size:12px;padding:7px 10px}
+.room-tools button[aria-pressed="true"]{outline:2px solid #f3c58b;outline-offset:2px}
+.room-tools .swatch{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px}
+.room-plant{position:fixed;bottom:7px;right:7px;font-size:34px;opacity:.7;pointer-events:none;filter:drop-shadow(0 3px 5px #0008);z-index:0}
+.footer{color:#cbb39b}
+body.warm{--accent:#bd7651;--line:#70513e;--panel:#30251f}
+body.moss{--accent:#82956a;--line:#62734e;--panel:#283027}
+body.plum{--accent:#a77b9b;--line:#755a70;--panel:#302630}
+@media(max-width:520px){.cozy-lights{margin-bottom:9px}.room-tools{gap:7px}}
+
 </style>
 </head>
 <body><main>
 <header class="head"><div><h1>🕯️ THE THEORY ROOM</h1><div class="sub">FROMVILLE • CASE FILES • CLASSIFIED</div></div><div class="sub">🧡 Shelbs' detective HQ</div></header>
+<div class="cozy-lights" id="fairyLights" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+<div class="room-tools" aria-label="Room decorations"><strong>🪴 ROOM VIBE</strong><button data-theme="warm" aria-pressed="true"><span class="swatch" style="background:#bd7651"></span>Amber</button><button data-theme="moss" aria-pressed="false"><span class="swatch" style="background:#82956a"></span>Forest</button><button data-theme="plum" aria-pressed="false"><span class="swatch" style="background:#a77b9b"></span>Plum</button><button id="lightsToggle" aria-pressed="true">✨ Lights on</button></div>
 <div class="toolbar"><button class="primary" id="add">＋ Add a theory</button><button id="export">↓ Export backup</button><button id="importBtn">↑ Import backup</button><input id="importFile" type="file" accept="application/json" class="hidden"></div>
 <div class="count" id="count"></div>
 <section class="board" id="board" aria-label="Theory corkboard"></section>
 <section class="panel hidden" id="editor"><h2>📌 New case note</h2><input class="field" id="title" maxlength="80" placeholder="Give your theory a title"><select class="field" id="category"><option>Tabitha</option><option>Boy in White</option><option>Victor</option><option>The Children</option><option>The Creatures</option><option>The Matthews Family</option><option>Boyd & Donna</option><option>Fromville Mysteries</option><option>Other</option></select><textarea class="field" id="body" rows="4" placeholder="Write your theory, clue, question or observation…"></textarea><button class="primary" id="save">Pin to board</button> <button id="cancel">Cancel</button></section>
 <section class="panel"><h2>🧵 Red string connections</h2><div class="muted">Connect two notes that might belong together.</div><div class="row"><select class="field" id="from"></select><select class="field" id="to"></select></div><button class="primary" id="connect">＋ Connect these clues</button><div id="links"></div></section>
 <section class="panel"><h2>📁 Case file categories</h2><div class="chips" id="categories"></div></section>
+<div class="room-plant" aria-hidden="true">🪴</div>
 <p class="footer">Your notes are stored on this device in this browser. Use Export Backup now and then to keep a copy. If you clear browser data or change phones, import your backup to restore your board. This app does not send your notes anywhere.</p>
 </main>
 <script>
@@ -59,6 +93,10 @@ const cats=['All','Tabitha','Boy in White','Victor','The Children','The Creature
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const persist=()=>localStorage.setItem(KEY,JSON.stringify({notes,links}));
 const uid=()=>Math.random().toString(36).slice(2,10);
+const roomPrefs=(()=>{try{return JSON.parse(localStorage.getItem('fromville-room-v1'))||{theme:'warm',lights:true}}catch(e){return {theme:'warm',lights:true}}})();
+function applyRoom(){document.body.classList.remove('warm','moss','plum');document.body.classList.add(roomPrefs.theme||'warm');$('fairyLights').classList.toggle('off',roomPrefs.lights===false);$('lightsToggle').textContent=roomPrefs.lights===false?'✨ Lights off':'✨ Lights on';$('lightsToggle').setAttribute('aria-pressed',String(roomPrefs.lights!==false));document.querySelectorAll('[data-theme]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.theme===roomPrefs.theme)));localStorage.setItem('fromville-room-v1',JSON.stringify(roomPrefs))}
+document.querySelector('.room-tools').addEventListener('click',e=>{const b=e.target.closest('[data-theme]');if(b){roomPrefs.theme=b.dataset.theme;applyRoom()}});
+$('lightsToggle').onclick=()=>{roomPrefs.lights=roomPrefs.lights===false;applyRoom()};
 function render(){
  const shown=notes.filter(n=>filter==='All'||n.cat===filter);
  $('board').innerHTML=shown.length?shown.map((n,i)=>`<article class="note" style="--tilt:${[-1.2,1,.4,-.7,1.4][i%5]}deg" data-id="${esc(n.id)}"><span class="pin"></span><div class="meta">${esc(n.cat)}</div><input aria-label="Theory title" data-field="title" value="${esc(n.title)}" maxlength="80"><textarea aria-label="Theory notes" data-field="body">${esc(n.body)}</textarea><button class="del" data-delete>🗑 Delete</button></article>`).join(''):'<div style="color:white;padding:20px">No notes here yet. Add a theory! 🕯️</div>';
@@ -79,6 +117,7 @@ $('links').onclick=e=>{let b=e.target.closest('[data-unlink]');if(b){links.splic
 $('export').onclick=()=>{let blob=new Blob([JSON.stringify({notes,links},null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='fromville-theory-backup.json';a.click();URL.revokeObjectURL(a.href)};
 $('importBtn').onclick=()=>$('importFile').click();
 $('importFile').onchange=async e=>{let f=e.target.files[0];if(!f)return;try{let d=JSON.parse(await f.text());if(!Array.isArray(d.notes)||!Array.isArray(d.links))throw Error();if(confirm('Replace your current board with this backup?')){notes=d.notes;links=d.links;persist();render()}}catch(err){alert('That backup file could not be read.')}e.target.value=''};
+applyRoom();
 render();
 })();
 </script>
