@@ -21,6 +21,19 @@
  const garland=document.createElement('div');garland.className='room3d-garland';garland.setAttribute('aria-label','Decorative string lights');
  for(let i=0;i<15;i++){const bulb=document.createElement('span');bulb.style.setProperty('--bulb-x',(i/14*100)+'%');bulb.style.setProperty('--bulb-y',(10+Math.sin(i/14*Math.PI)*35)+'px');garland.append(bulb)}
  wall.append(garland);
+ // Warm fairy-light strands running down both side edges of the room.
+ const sideGarlands=[];
+ ['left','right'].forEach(side=>{
+  const strand=document.createElement('div');strand.className='room3d-side-garland '+side;
+  strand.setAttribute('aria-hidden','true');
+  for(let i=0;i<9;i++){
+   const bulb=document.createElement('span');
+   bulb.style.setProperty('--bulb-y',(i/8*100)+'%');
+   bulb.style.setProperty('--bulb-x',(i%2===0?'0px':'3px'));
+   strand.append(bulb);
+  }
+  wall.append(strand);sideGarlands.push(strand);
+ });
  const toggle=document.createElement('button');toggle.type='button';toggle.className='room3d-view';toggle.textContent='🧊 3D room on';toggle.setAttribute('aria-pressed','true');toggle.title='Toggle the 3D room';
  const angle=document.createElement('button');angle.type='button';angle.textContent='↻ Change angle';angle.title='Rotate the room view';
  const reset=document.createElement('button');reset.type='button';reset.textContent='⌂ Reset view';reset.title='Reset room perspective';
@@ -29,7 +42,7 @@
  const colorButtons=[];
  palette.forEach(([name,color])=>{const b=document.createElement('button');b.type='button';b.className='light-color';b.title=name+' string and fairy-light color';b.setAttribute('aria-label',name+' string and fairy-light color');b.style.background=color;b.addEventListener('click',()=>{saved.lightColor=color;const input=document.getElementById('stringColor');if(input){input.value=color;input.dispatchEvent(new Event('input',{bubbles:true}))}paintLights();persist()});bar.append(b);colorButtons.push([b,color])});
  const hint=document.createElement('span');hint.className='room3d-hint';hint.textContent='Drag empty room space to look around';bar.append(hint);
- function paintLights(){garland.style.setProperty('--bulb-color',saved.lightColor);garland.classList.toggle('is-off',saved.lights===false);colorButtons.forEach(([b,c])=>b.setAttribute('aria-pressed',String(c===saved.lightColor)))}
+ function paintLights(){[garland,...sideGarlands].forEach(strand=>{strand.style.setProperty('--bulb-color',saved.lightColor);strand.classList.toggle('is-off',saved.lights===false)});colorButtons.forEach(([b,c])=>b.setAttribute('aria-pressed',String(c===saved.lightColor)))}
  function setView(){world.style.setProperty('--room-yaw',saved.yaw+'deg');world.style.setProperty('--room-pitch',saved.pitch+'deg')}
  toggle.addEventListener('click',()=>{const flat=scene.classList.toggle('is-flat');toggle.textContent=flat?'🧊 3D room off':'🧊 3D room on';toggle.setAttribute('aria-pressed',String(!flat))});
  angle.addEventListener('click',()=>{saved.yaw=saved.yaw===0?-7:saved.yaw===-7?7:0;saved.pitch=saved.yaw===0?0:1;setView();persist()});
