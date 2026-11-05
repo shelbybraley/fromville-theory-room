@@ -16,6 +16,8 @@
  const right=document.createElement('div');right.className='room3d-side right';right.setAttribute('aria-hidden','true');
  const ceiling=document.createElement('div');ceiling.className='room3d-ceiling';ceiling.setAttribute('aria-hidden','true');
  world.insertBefore(left,wall);world.insertBefore(right,wall);world.insertBefore(ceiling,wall);
+ const syncWall=()=>world.style.setProperty('--wall',getComputedStyle(wall).getPropertyValue('--wall').trim()||'#49372d');
+ syncWall();new MutationObserver(syncWall).observe(wall,{attributes:true,attributeFilter:['style']});
  const garland=document.createElement('div');garland.className='room3d-garland';garland.setAttribute('aria-label','Decorative string lights');
  for(let i=0;i<15;i++){const bulb=document.createElement('span');bulb.style.setProperty('--bulb-x',(i/14*100)+'%');bulb.style.setProperty('--bulb-y',(10+Math.sin(i/14*Math.PI)*35)+'px');garland.append(bulb)}
  wall.append(garland);
