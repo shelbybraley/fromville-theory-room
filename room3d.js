@@ -7,7 +7,7 @@
  if(!scene||!wall||!floor||!bar)return;
  const prefsKey='fromville-room3d-v1';
  const palette=[['Scarlet','#e34b3f'],['Ocean','#4c9bd6'],['Gold','#e6b94f'],['Violet','#a77bcb'],['Mint','#65b99a'],['Warm white','#f4e8d5']];
- let saved={lightColor:'#ffd88c',lights:true,yaw:0,pitch:0};
+ let saved={lightColor:'#ffd88c',lights:!document.getElementById('fairyLights')?.classList.contains('off'),yaw:0,pitch:0};
  try{saved={...saved,...JSON.parse(localStorage.getItem(prefsKey)||'{}')}}catch(e){}
  const persist=()=>{try{localStorage.setItem(prefsKey,JSON.stringify(saved))}catch(e){}};
  const world=document.createElement('div');world.className='room3d-world';
