@@ -1,6 +1,4 @@
 {
-  
-{
   "name": "Fromville — The Theory Room",
   "short_name": "Fromville Board",
   "description": "A personal corkboard for From theories, clues and red-string connections.",
@@ -9,7 +7,7 @@
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#171311",
-  "theme_color": "#241914",
+  "theme_color": "#30241e",
   "icons": [
     {
       "src": "icon-192.png",
@@ -24,6 +22,4 @@
       "purpose": "any"
     }
   ]
-}
-
 }
