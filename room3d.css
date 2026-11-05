@@ -37,3 +37,13 @@
 .room-scene.is-rotated .room3d-world{--room-yaw:-5deg;--room-pitch:1deg}
 @media(max-width:600px){.room-scene{perspective:850px}.room3d-world{min-height:500px}.room-wall{min-height:420px}.room3d-side{width:14%;bottom:80px}.room3d-ceiling{height:85px}.room-floor{height:115px;margin-bottom:-34px}.room-scene .board{transform:translateZ(16px)}.room-scene .note{transform:translateZ(10px) rotate(var(--tilt))}.room-decoration{transform:translate(-50%,-50%) translateZ(26px)}.room3d-garland{top:4%;height:60px}}
 @media(prefers-reduced-motion:reduce){.room3d-world,.room-scene *{transition:none!important}}
+
+
+/* Matching warm fairy lights cascading down both sides of the detective room. */
+.room3d-side-garland{position:absolute;z-index:7;top:10%;bottom:8%;width:18px;display:flex;flex-direction:column;justify-content:space-between;pointer-events:none;filter:drop-shadow(0 0 6px var(--bulb-color,#ffd88c))}
+.room3d-side-garland.left{left:2.5%}
+.room3d-side-garland.right{right:2.5%}
+.room3d-side-garland:before{content:"";position:absolute;top:0;bottom:0;left:7px;border-left:2px solid #4a3020;opacity:.95}
+.room3d-side-garland span{position:relative;display:block;width:9px;height:13px;margin-left:3px;border-radius:50% 50% 45% 45%;background:var(--bulb-color,#ffd88c);box-shadow:0 0 8px 3px var(--bulb-color,#ffd88c),0 0 18px 5px color-mix(in srgb,var(--bulb-color,#ffd88c) 45%,transparent);transform:translateX(var(--bulb-x,0))}
+.room3d-side-garland.is-off{opacity:.14;filter:none}
+@media(max-width:600px){.room3d-side-garland{top:12%;bottom:10%;width:13px}.room3d-side-garland.left{left:1.5%}.room3d-side-garland.right{right:1.5%}.room3d-side-garland span{width:7px;height:10px}}
