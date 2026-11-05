@@ -1,0 +1,13 @@
+/* Spacious perspective corkboard and tactile paper/string interactions. */
+.room-scene .board.physical-board{display:block;position:relative;width:min(96%,1100px);min-height:650px;margin:38px auto 24px;padding:0;overflow:visible;transform:translateZ(32px);background-color:#765039;background-image:radial-gradient(#d0a77c .9px,transparent 1px),linear-gradient(90deg,#ffffff08 1px,transparent 1px);background-size:15px 15px,100% 100%;border:12px solid #38251c;box-shadow:0 22px 42px #000b,inset 0 0 48px #24150d88}
+.room-scene .physical-board .note{position:absolute;margin:0;min-height:155px;z-index:2;cursor:default;transform:rotate(var(--tilt,0deg)) translateZ(18px);touch-action:pan-y}
+.room-scene .physical-board .note-handle{cursor:grab;touch-action:none;border-bottom:1px dashed #78634c;padding:4px 0 7px}
+.room-scene .physical-board .note-handle:active{cursor:grabbing}
+.string-overlay{position:absolute;inset:0;width:100%;height:100%;overflow:visible;z-index:3;pointer-events:none}
+.room-scene .physical-board .note.string-start{outline:3px solid #ffe0a1;outline-offset:4px;z-index:6}
+.board-controls{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;max-width:1100px;margin:14px auto 0;padding:10px;background:#261b15;border:1px solid #79583f;border-radius:12px}
+.board-controls button{padding:8px 11px;font-size:12px}
+.board-controls #zoomLabel{font-size:12px;color:#f1d5b2;min-width:42px;text-align:center}
+.board-help{width:100%;text-align:center;color:#d9bda0;font-size:11px}
+.room-scene .physical-board.string-mode .note{cursor:crosshair}
+@media(max-width:600px){.room-scene .board.physical-board{width:100%;min-height:650px;margin:24px auto 16px;border-width:8px}.room-scene .physical-board .note{min-height:145px}.board-controls{gap:6px}.board-help{font-size:10px}}
