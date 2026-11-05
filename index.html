@@ -71,6 +71,11 @@ body.plum{--accent:#a77b9b;--line:#755a70;--panel:#302630}
 .connection .string-line{display:inline-block;width:45px;height:4px;border-radius:8px;vertical-align:middle;box-shadow:0 0 7px currentColor}
 @media(max-width:520px){.room-wall{min-height:420px;padding:12px 8px 18px}.room-scene .board{grid-template-columns:1fr 1fr}.room-decoration{font-size:34px}.room-floor{height:75px}}
 
+/* Keep both connection pickers above the 3D room stacking layers. */
+#connectionPanel{position:relative;z-index:30;isolation:isolate}
+#connectionPanel .row{position:relative;z-index:31}
+#connectionPanel select{position:relative;z-index:32;min-height:46px;pointer-events:auto;touch-action:manipulation}
+.room-scene{position:relative;z-index:1}
 </style>
 <link rel="stylesheet" href="./room3d.css">\n<link rel="stylesheet" href="./board3d.css">\n<link rel="stylesheet" href="./room-layout.css">
 </head>
@@ -80,7 +85,7 @@ body.plum{--accent:#a77b9b;--line:#755a70;--panel:#302630}
 <div class="room-tools" aria-label="Room decorations"><strong>🪴 ROOM VIBE</strong><button data-theme="warm" aria-pressed="true"><span class="swatch" style="background:#bd7651"></span>Amber</button><button data-theme="moss" aria-pressed="false"><span class="swatch" style="background:#82956a"></span>Forest</button><button data-theme="plum" aria-pressed="false"><span class="swatch" style="background:#a77b9b"></span>Plum</button><button id="lightsToggle" aria-pressed="true">✨ Lights on</button></div>
 <div class="toolbar"><button class="primary" id="add">＋ Add a theory</button><button id="export">↓ Export backup</button><button id="importBtn">↑ Import backup</button><input id="importFile" type="file" accept="application/json" class="hidden"></div>
 <div class="count" id="count"></div>
-<section class="panel"><h2>🧵 Red string connections</h2><div class="muted">Connect two notes that might belong together.</div><div class="row"><select class="field" id="from"></select><select class="field" id="to"></select></div><label style="display:block;color:#e8c9a8;font-size:12px">String color <input id="stringColor" type="color" value="#e34b3f" style="display:block;width:100%;height:38px;margin:6px 0 10px"></label><button class="primary" id="connect">＋ Connect these clues</button><div id="links"></div></section>
+<section class="panel" id="connectionPanel"><h2>🧵 Red string connections</h2><div class="muted">Connect two notes that might belong together.</div><div class="row"><select class="field" id="from"></select><select class="field" id="to"></select></div><label style="display:block;color:#e8c9a8;font-size:12px">String color <input id="stringColor" type="color" value="#e34b3f" style="display:block;width:100%;height:38px;margin:6px 0 10px"></label><button class="primary" id="connect">＋ Connect these clues</button><div id="links"></div></section>
 <section class="room-scene" aria-label="Your Fromville theory room"><div class="room-wall" id="roomWall"><section class="board" id="board" aria-label="Theory corkboard"></section><div id="decorLayer"></div></div><div class="room-floor" id="roomFloor"></div></section>
 <section class="panel hidden" id="editor"><h2>📌 New case note</h2><input class="field" id="title" maxlength="80" placeholder="Give your theory a title"><select class="field" id="category"><option>Tabitha</option><option>Boy in White</option><option>Victor</option><option>The Children</option><option>The Creatures</option><option>The Matthews Family</option><option>Boyd & Donna</option><option>Fromville Mysteries</option><option>Other</option></select><textarea class="field" id="body" rows="4" placeholder="Write your theory, clue, question or observation…"></textarea><button class="primary" id="save">Pin to board</button> <button id="cancel">Cancel</button></section>
 
