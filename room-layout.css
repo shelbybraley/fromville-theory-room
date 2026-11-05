@@ -1,0 +1,31 @@
+/* Keep furniture in the room's foreground instead of flattening it behind the corkboard. */
+#decorLayer{position:absolute;inset:0;z-index:8;transform-style:preserve-3d;pointer-events:none}
+#decorLayer .room-decoration{z-index:8;pointer-events:auto;transform:translate(-50%,-50%) translateZ(72px)}
+.room-scene .board.physical-board{z-index:2}
+.room-scene .board.physical-board .note{z-index:2}
+.room3d-world,.room-wall{transform-style:preserve-3d}
+.room-decoration button{z-index:10}
+
+/* Landscape phones: give the room a wide, cinematic stage. */
+@media (orientation:landscape) and (max-height:600px){
+ main{max-width:none;padding:8px 14px 24px}
+ .head{padding:7px 12px}
+ h1{font-size:22px}
+ .cozy-lights{height:18px;margin:0 8px 5px}
+ .room-tools{margin:5px 0 8px;padding:7px 10px}
+ .toolbar{margin:7px 0 5px}
+ .count{margin:4px 0}
+ .room-scene{margin:8px 0 12px;perspective:1100px}
+ .room3d-world{min-height:calc(100vh - 145px)}
+ .room-wall{min-height:calc(100vh - 250px);padding:10px 3vw 16px}
+ .room-scene .board.physical-board{width:88%;max-width:1400px;min-height:620px;margin:18px auto}
+ .room-floor{height:130px}
+ .room3d-side{width:18%}
+ .room-decoration{font-size:clamp(34px,6vh,58px)}
+ .board-controls{max-width:88%;margin:8px auto}
+}
+@media (orientation:landscape) and (min-height:601px){
+ main{max-width:1400px}
+ .room-wall{min-height:600px}
+ .room-scene .board.physical-board{width:88%;max-width:1250px}
+}
