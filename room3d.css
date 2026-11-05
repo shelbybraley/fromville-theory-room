@@ -1,17 +1,39 @@
-/* Immersive 3D detective-room layer */
-:root{--room-depth:1}
-.room-scene{perspective:1100px;transform-style:preserve-3d;position:relative;isolation:isolate}
-.room-wall{transform:rotateX(1.2deg);transform-origin:50% 100%;transform-style:preserve-3d;box-shadow:inset 0 0 70px #10090588}
-.room-wall:before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.22;background:repeating-linear-gradient(90deg,transparent 0 23%,#1b100a 23.2% 23.5%,transparent 23.8% 100%);transform:translateZ(-12px)}
-.room-scene:after{content:"";position:absolute;inset:0;border-radius:8px;pointer-events:none;box-shadow:inset 0 0 35px #0008}
-.room-scene .board{transform:translateZ(24px);box-shadow:0 20px 28px #0009,inset 0 0 35px #1c100b99;border-width:10px}
-.room-scene .note{transform:translateZ(15px) rotate(var(--tilt));transition:transform .2s,box-shadow .2s}
-.room-scene .note:focus-within,.room-scene .note:hover{transform:translateZ(35px) rotate(0deg);box-shadow:0 22px 24px #000a;z-index:5}
-.room-floor{position:relative;transform:rotateX(-3deg);transform-origin:50% 0;box-shadow:inset 0 15px 25px #0008,0 12px 20px #0006}
-.room-decoration{transform:translate(-50%,-50%) translateZ(48px);text-shadow:0 8px 8px #0008;filter:drop-shadow(4px 12px 6px #0009);transition:filter .18s}
+/* Immersive 3D room: real room planes, depth, furniture forms and lighting. */
+.room-scene{perspective:1250px;perspective-origin:50% 42%;transform-style:preserve-3d;position:relative;isolation:isolate;overflow:visible}
+.room3d-world{position:relative;min-height:570px;transform-style:preserve-3d;transform:rotateX(var(--room-pitch,-2deg)) rotateY(var(--room-yaw,0deg));transform-origin:50% 48%;transition:transform .35s ease}
+.room3d-ceiling{position:absolute;z-index:0;left:9%;right:9%;top:-2px;height:118px;transform-origin:50% 0;transform:rotateX(-68deg) translateZ(-2px);background:linear-gradient(180deg,#241811,#4b3628);border:2px solid #241811;box-shadow:inset 0 -12px 22px #0007;pointer-events:none}
+.room3d-side{position:absolute;z-index:0;top:0;bottom:100px;width:22%;background:linear-gradient(90deg,#17100c66,#ffffff0a),var(--wall,#49372d);border:2px solid #241811;box-shadow:inset 0 0 35px #0008;pointer-events:none}
+.room3d-side.left{left:0;transform-origin:left center;transform:rotateY(68deg) translateX(-8%)}
+.room3d-side.right{right:0;transform-origin:right center;transform:rotateY(-68deg) translateX(8%)}
+.room-wall{position:relative;z-index:1;min-height:470px;transform:translateZ(0);transform-style:preserve-3d;box-shadow:inset 0 0 70px #10090588,0 12px 25px #0006}
+.room-wall:before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.18;background:repeating-linear-gradient(90deg,transparent 0 23%,#1b100a 23.2% 23.5%,transparent 23.8% 100%);transform:translateZ(-12px)}
+.room-floor{position:relative;z-index:2;height:145px;transform-origin:50% 0;transform:rotateX(68deg) translateY(-2px);margin-bottom:-42px;box-shadow:inset 0 15px 25px #0008,0 18px 25px #0008}
+.room-scene .board{position:relative;z-index:2;transform:translateZ(28px);box-shadow:0 20px 28px #0009,inset 0 0 35px #1c100b99;border-width:10px}
+.room-scene .note{transform:translateZ(18px) rotate(var(--tilt));transition:transform .2s,box-shadow .2s}
+.room-scene .note:focus-within,.room-scene .note:hover{transform:translateZ(38px) rotate(0deg);box-shadow:0 22px 24px #000a;z-index:5}
+.room-decoration{z-index:5;transform:translate(-50%,-50%) translateZ(55px);text-shadow:0 8px 8px #0008;filter:drop-shadow(4px 12px 6px #0009);transition:filter .18s;touch-action:none}
 .room-decoration:hover{filter:drop-shadow(5px 16px 9px #000b) brightness(1.15)}
-.room-tools .bulb-mode{border-color:#f5d18a}
-.room-settings .wide{grid-column:1/-1}
-.room-scene.is-rotated .room-wall{transform:rotateX(2deg) rotateY(-2deg);transform-origin:50% 100%}
-@media(max-width:600px){.room-scene{perspective:800px}.room-scene .board{transform:translateZ(12px)}.room-scene .note{transform:translateZ(8px) rotate(var(--tilt))}.room-decoration{transform:translate(-50%,-50%) translateZ(22px)}}
-@media(prefers-reduced-motion:reduce){.room-scene *{transition:none!important}}
+.room3d-object{position:relative;display:inline-flex;align-items:center;justify-content:center;min-width:1.2em;min-height:1.15em;isolation:isolate;filter:drop-shadow(0 5px 4px #0008)}
+.room3d-object:before,.room3d-object:after{content:"";position:absolute;z-index:-1;pointer-events:none}
+.room3d-object:before{left:13%;right:13%;bottom:2%;height:32%;background:linear-gradient(180deg,#d2a779,#795039);transform:perspective(80px) rotateX(22deg);border:1px solid #24181188;box-shadow:0 5px 4px #0006}
+.room3d-object:after{right:4%;bottom:9%;width:18%;height:44%;background:linear-gradient(90deg,#563824,#241811);transform:skewY(-25deg);border-radius:2px}
+.room-decoration[data-model="sofa"] .room3d-object:before{height:42%;background:linear-gradient(#b77b58,#70432f);border-radius:7px 7px 2px 2px}
+.room-decoration[data-model="chair"] .room3d-object:before{height:50%;background:linear-gradient(#b88a5b,#68432d)}
+.room-decoration[data-model="books"] .room3d-object:before{height:65%;background:repeating-linear-gradient(0deg,#6b382b 0 5px,#d5a45e 6px 9px);border:2px solid #302016}
+.room-decoration[data-model="cabinet"] .room3d-object:before{height:65%;background:linear-gradient(90deg,#6a422c,#b17a4d,#4c2d20);border:2px solid #29180f}
+.room-decoration[data-model="rug"] .room3d-object:before{height:13%;left:-30%;right:-30%;bottom:-5%;background:repeating-linear-gradient(90deg,#a24d3f 0 8px,#d6a66e 9px 13px);border-radius:50%;transform:perspective(80px) rotateX(35deg)}
+.room-decoration[data-model="plant"] .room3d-object:before{height:22%;background:linear-gradient(#c37b4b,#6c3c27);border-radius:2px 2px 7px 7px}
+.room3d-garland{position:absolute;z-index:6;left:5%;right:5%;top:5%;height:76px;pointer-events:none;filter:drop-shadow(0 0 5px var(--bulb-color,#ffd88c))}
+.room3d-garland:before{content:"";position:absolute;left:0;right:0;top:4px;height:50px;border-top:2px solid #4a3020;border-radius:50%}
+.room3d-garland span{position:absolute;top:var(--bulb-y,16px);left:var(--bulb-x);width:9px;height:13px;border-radius:50% 50% 45% 45%;background:var(--bulb-color,#ffd88c);box-shadow:0 0 8px 3px var(--bulb-color,#ffd88c),0 0 18px 5px color-mix(in srgb,var(--bulb-color,#ffd88c) 45%,transparent);transform:translateX(-50%)}
+.room3d-garland.is-off{opacity:.14;filter:none}
+.room-tools .room3d-view{border-color:#e7c38e}
+.room-tools .room3d-view[aria-pressed="true"]{background:#715139;outline:2px solid #f3c58b;outline-offset:2px}
+.room-tools .light-color{width:27px;height:27px;min-width:27px;padding:0;border-radius:50%;border:2px solid #ead6b8}
+.room-tools .light-color[aria-pressed="true"]{outline:2px solid #fff;outline-offset:3px}
+.room3d-hint{font-size:11px;color:#d9bda0;margin-left:4px}
+.room-scene.is-flat .room3d-world{transform:none!important}
+.room-scene.is-flat .room3d-side,.room-scene.is-flat .room3d-ceiling{opacity:0}
+.room-scene.is-rotated .room3d-world{--room-yaw:-5deg;--room-pitch:1deg}
+@media(max-width:600px){.room-scene{perspective:850px}.room3d-world{min-height:500px}.room-wall{min-height:420px}.room3d-side{width:14%;bottom:80px}.room3d-ceiling{height:85px}.room-floor{height:115px;margin-bottom:-34px}.room-scene .board{transform:translateZ(16px)}.room-scene .note{transform:translateZ(10px) rotate(var(--tilt))}.room-decoration{transform:translate(-50%,-50%) translateZ(26px)}.room3d-garland{top:4%;height:60px}}
+@media(prefers-reduced-motion:reduce){.room3d-world,.room-scene *{transition:none!important}}
