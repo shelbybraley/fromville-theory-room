@@ -56,6 +56,21 @@ body.moss{--accent:#82956a;--line:#62734e;--panel:#283027}
 body.plum{--accent:#a77b9b;--line:#755a70;--panel:#302630}
 @media(max-width:520px){.cozy-lights{margin-bottom:9px}.room-tools{gap:7px}}
 
+
+/* Full-room builder */
+.room-scene{margin:14px 0 18px;border:9px solid #241811;border-radius:18px;overflow:hidden;box-shadow:0 18px 40px #0009;background:#241811}
+.room-wall{position:relative;min-height:470px;padding:18px 14px 22px;background:var(--wall,#49372d);background-image:linear-gradient(90deg,#0002 1px,transparent 1px),linear-gradient(#ffffff08 1px,transparent 1px),radial-gradient(ellipse at 50% 0%,#ffffff12,transparent 70%);background-size:72px 100%,100% 54px,100% 100%;border-bottom:9px solid #241811}
+.room-floor{height:100px;background:repeating-linear-gradient(90deg,transparent 0 95px,#24160e33 96px 99px),repeating-linear-gradient(0deg,var(--floor,#694832) 0 29px,#3d281d 30px 33px);box-shadow:inset 0 8px 15px #0005}
+.room-scene .board{position:relative;z-index:2;min-height:220px;max-width:850px;margin:8px auto 0}
+.room-decoration{position:absolute;z-index:4;left:var(--x,8%);top:var(--y,70%);font-size:clamp(30px,7vw,52px);line-height:1;cursor:grab;user-select:none;touch-action:none;filter:drop-shadow(2px 5px 4px #0009);transform:translate(-50%,-50%)}
+.room-decoration:active{cursor:grabbing}.room-decoration button{position:absolute;top:-12px;right:-17px;font-size:11px;padding:2px 5px;border-radius:50%;opacity:.9}
+.room-settings{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:9px}
+.room-settings label{display:flex;flex-direction:column;gap:6px;color:#e8c9a8;font-size:12px}
+.room-settings select,.room-settings input{width:100%;min-height:38px;border:1px solid #806047;border-radius:9px;background:#171311;color:#fff;padding:7px}
+.decor-buttons{display:flex;gap:7px;flex-wrap:wrap}.decor-buttons button{font-size:12px}
+.connection .string-line{display:inline-block;width:45px;height:4px;border-radius:8px;vertical-align:middle;box-shadow:0 0 7px currentColor}
+@media(max-width:520px){.room-wall{min-height:420px;padding:12px 8px 18px}.room-scene .board{grid-template-columns:1fr 1fr}.room-decoration{font-size:34px}.room-floor{height:75px}}
+
 </style>
 </head>
 <body><main>
@@ -64,10 +79,10 @@ body.plum{--accent:#a77b9b;--line:#755a70;--panel:#302630}
 <div class="room-tools" aria-label="Room decorations"><strong>🪴 ROOM VIBE</strong><button data-theme="warm" aria-pressed="true"><span class="swatch" style="background:#bd7651"></span>Amber</button><button data-theme="moss" aria-pressed="false"><span class="swatch" style="background:#82956a"></span>Forest</button><button data-theme="plum" aria-pressed="false"><span class="swatch" style="background:#a77b9b"></span>Plum</button><button id="lightsToggle" aria-pressed="true">✨ Lights on</button></div>
 <div class="toolbar"><button class="primary" id="add">＋ Add a theory</button><button id="export">↓ Export backup</button><button id="importBtn">↑ Import backup</button><input id="importFile" type="file" accept="application/json" class="hidden"></div>
 <div class="count" id="count"></div>
-<section class="board" id="board" aria-label="Theory corkboard"></section>
+<section class="room-scene" aria-label="Your Fromville theory room"><div class="room-wall" id="roomWall"><section class="board" id="board" aria-label="Theory corkboard"></section><div id="decorLayer"></div></div><div class="room-floor" id="roomFloor"></div></section>
 <section class="panel hidden" id="editor"><h2>📌 New case note</h2><input class="field" id="title" maxlength="80" placeholder="Give your theory a title"><select class="field" id="category"><option>Tabitha</option><option>Boy in White</option><option>Victor</option><option>The Children</option><option>The Creatures</option><option>The Matthews Family</option><option>Boyd & Donna</option><option>Fromville Mysteries</option><option>Other</option></select><textarea class="field" id="body" rows="4" placeholder="Write your theory, clue, question or observation…"></textarea><button class="primary" id="save">Pin to board</button> <button id="cancel">Cancel</button></section>
-<section class="panel"><h2>🧵 Red string connections</h2><div class="muted">Connect two notes that might belong together.</div><div class="row"><select class="field" id="from"></select><select class="field" id="to"></select></div><button class="primary" id="connect">＋ Connect these clues</button><div id="links"></div></section>
-<section class="panel"><h2>📁 Case file categories</h2><div class="chips" id="categories"></div></section>
+<section class="panel"><h2>🧵 Red string connections</h2><div class="muted">Connect two notes that might belong together.</div><div class="row"><select class="field" id="from"></select><select class="field" id="to"></select></div><label style="display:block;color:#e8c9a8;font-size:12px">String color <input id="stringColor" type="color" value="#e34b3f" style="display:block;width:100%;height:38px;margin:6px 0 10px"></label><button class="primary" id="connect">＋ Connect these clues</button><div id="links"></div></section>
+<section class="panel"><h2>🛋️ Make this room yours</h2><div class="muted">Change the walls and floor, then add furniture. Drag decorations around the room; tap × to remove one.</div><div class="room-settings" style="margin:12px 0"><label>Wall color<select id="wallColor"><option value="#49372d">Warm cocoa</option><option value="#263b35">Deep forest</option><option value="#39304a">Midnight plum</option><option value="#344451">Stormy blue</option><option value="#59423d">Dusty rosewood</option><option value="#292929">Charcoal</option></select></label><label>Floor color<select id="floorColor"><option value="#694832">Oak wood</option><option value="#48543c">Moss wood</option><option value="#493b56">Plum wood</option><option value="#405264">Blue-grey wood</option><option value="#765b48">Honey wood</option></select></label></div><div class="decor-buttons"><button data-decor="🪴">＋ Plant</button><button data-decor="🛋️">＋ Sofa</button><button data-decor="🪑">＋ Chair</button><button data-decor="📚">＋ Bookshelf</button><button data-decor="🪟">＋ Window</button><button data-decor="🕯️">＋ Candle</button><button data-decor="💡">＋ Lamp</button><button data-decor="🖼️">＋ Wall art</button><button data-decor="🧶">＋ Rug</button><button data-decor="🗄️">＋ Cabinet</button></div></section><section class="panel"><h2>📁 Case file categories</h2><div class="chips" id="categories"></div></section>
 <div class="room-plant" aria-hidden="true">🪴</div>
 <p class="footer">Your notes are stored on this device in this browser. Use Export Backup now and then to keep a copy. If you clear browser data or change phones, import your backup to restore your board. This app does not send your notes anywhere.</p>
 </main>
@@ -104,7 +119,7 @@ function render(){
  $('categories').innerHTML=cats.map(c=>`<button data-cat="${esc(c)}" class="${filter===c?'active':''}">${esc(c)}</button>`).join('');
  const opts=notes.map(n=>`<option value="${esc(n.id)}">${esc(n.title)}</option>`).join('');
  $('from').innerHTML=opts;$('to').innerHTML=opts;
- $('links').innerHTML=links.map((l,i)=>{let a=notes.find(n=>n.id===l.a),b=notes.find(n=>n.id===l.b);return a&&b?`<div class="connection">📌 ${esc(a.title)} <b style="color:#e16b54">━━━━🔴━━━━</b> ${esc(b.title)} <button data-unlink="${i}">Remove</button></div>`:''}).join('')||'<div class="muted" style="margin-top:9px">No connected clues yet.</div>';
+ $('links').innerHTML=links.map((l,i)=>{let a=notes.find(n=>n.id===l.a),b=notes.find(n=>n.id===l.b);return a&&b?`<div class="connection">📌 ${esc(a.title)} <span class="string-line" style="background:${esc(l.color||'#e34b3f')};color:${esc(l.color||'#e34b3f')}"></span> ${esc(b.title)} <button data-unlink="${i}">Remove</button></div>`:''}).join('')||'<div class="muted" style="margin-top:9px">No connected clues yet.</div>';
 }
 $('add').onclick=()=>{$('editor').classList.remove('hidden');$('title').focus()};
 $('cancel').onclick=()=>{$('editor').classList.add('hidden')};
@@ -112,7 +127,7 @@ $('save').onclick=()=>{let title=$('title').value.trim();if(!title){$('title').f
 $('board').addEventListener('input',e=>{let card=e.target.closest('[data-id]'),n=notes.find(x=>x.id===card?.dataset.id);if(n&&e.target.dataset.field){n[e.target.dataset.field]=e.target.value;persist()}});
 $('board').addEventListener('click',e=>{if(!e.target.matches('[data-delete]'))return;let id=e.target.closest('[data-id]').dataset.id;notes=notes.filter(n=>n.id!==id);links=links.filter(l=>l.a!==id&&l.b!==id);persist();render()});
 $('categories').onclick=e=>{let b=e.target.closest('[data-cat]');if(b){filter=b.dataset.cat;render()}};
-$('connect').onclick=()=>{let a=$('from').value,b=$('to').value;if(!a||!b||a===b)return;if(!links.some(l=>(l.a===a&&l.b===b)||(l.a===b&&l.b===a)))links.push({a,b});persist();render()};
+$('connect').onclick=()=>{let a=$('from').value,b=$('to').value;if(!a||!b||a===b)return;if(!links.some(l=>(l.a===a&&l.b===b)||(l.a===b&&l.b===a)))links.push({a,b,color:$('stringColor').value||'#e34b3f'});persist();render()};
 $('links').onclick=e=>{let b=e.target.closest('[data-unlink]');if(b){links.splice(+b.dataset.unlink,1);persist();render()}};
 $('export').onclick=()=>{let blob=new Blob([JSON.stringify({notes,links},null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='fromville-theory-backup.json';a.click();URL.revokeObjectURL(a.href)};
 $('importBtn').onclick=()=>$('importFile').click();
@@ -122,4 +137,56 @@ render();
 })();
 </script>
 <script>if('serviceWorker' in navigator && location.protocol.startsWith('http'))navigator.serviceWorker.register('./sw.js').catch(()=>{});</script>
+
+<script>
+(()=> {
+const prefKey='fromville-room-v1';
+let prefs={theme:'warm',lights:true,wall:'#49372d',floor:'#694832',stringColor:'#e34b3f',decor:[]};
+try{prefs={...prefs,...JSON.parse(localStorage.getItem(prefKey)||'{}')}}catch(e){}
+if(!Array.isArray(prefs.decor))prefs.decor=[];
+const $=id=>document.getElementById(id);
+const save=()=>localStorage.setItem(prefKey,JSON.stringify(prefs));
+function paint(){
+ const wall=$('roomWall'),floor=$('roomFloor');
+ if(wall)wall.style.setProperty('--wall',prefs.wall);
+ if(floor)floor.style.setProperty('--floor',prefs.floor);
+ if($('wallColor'))$('wallColor').value=prefs.wall;
+ if($('floorColor'))$('floorColor').value=prefs.floor;
+ if($('stringColor'))$('stringColor').value=prefs.stringColor;
+ draw();save();
+}
+function draw(){
+ const layer=$('decorLayer');if(!layer)return;
+ layer.innerHTML=prefs.decor.map(d=>'<div class="room-decoration" data-decor-id="'+d.id+'" style="--x:'+d.x+'%;--y:'+d.y+'%" title="Drag to move">'+d.emoji+'<button type="button" data-remove-decor="'+d.id+'" aria-label="Remove decoration">×</button></div>').join('');
+}
+$('wallColor').addEventListener('change',e=>{prefs.wall=e.target.value;paint()});
+$('floorColor').addEventListener('change',e=>{prefs.floor=e.target.value;paint()});
+$('stringColor').addEventListener('input',e=>{prefs.stringColor=e.target.value;save()});
+document.querySelector('.decor-buttons').addEventListener('click',e=>{
+ const b=e.target.closest('[data-decor]');if(!b)return;
+ prefs.decor.push({id:Math.random().toString(36).slice(2,10),emoji:b.dataset.decor,x:12+(prefs.decor.length%5)*17,y:76});paint();
+});
+let moving=null,start=null;
+$('decorLayer').addEventListener('pointerdown',e=>{
+ const el=e.target.closest('.room-decoration');if(!el||e.target.closest('[data-remove-decor]'))return;
+ moving=prefs.decor.find(d=>d.id===el.dataset.decorId);if(!moving)return;
+ const r=$('roomWall').getBoundingClientRect();start={x:e.clientX,y:e.clientY,w:r.width,h:r.height,px:moving.x,py:moving.y};e.preventDefault();
+});
+$('decorLayer').addEventListener('pointermove',e=>{
+ if(!moving||!start)return;
+ moving.x=Math.max(3,Math.min(97,start.px+(e.clientX-start.x)/start.w*100));
+ moving.y=Math.max(4,Math.min(96,start.py+(e.clientY-start.y)/start.h*100));
+ const el=$('decorLayer').querySelector('[data-decor-id="'+moving.id+'"]');
+ if(el){el.style.setProperty('--x',moving.x+'%');el.style.setProperty('--y',moving.y+'%')}
+});
+$('decorLayer').addEventListener('pointerup',()=>{if(moving)save();moving=null;start=null});
+$('decorLayer').addEventListener('pointercancel',()=>{if(moving)save();moving=null;start=null});
+$('decorLayer').addEventListener('click',e=>{
+ const b=e.target.closest('[data-remove-decor]');if(!b)return;
+ prefs.decor=prefs.decor.filter(d=>d.id!==b.dataset.removeDecor);paint();
+});
+paint();
+})();
+</script>
+
 </body></html>
