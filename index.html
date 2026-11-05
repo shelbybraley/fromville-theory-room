@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#241914">
+<meta name="description" content="Your personal Fromville mystery and theory board.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<title>Fromville — The Theory Room</title>
+<style>
+:root{color-scheme:dark;--bg:#171311;--panel:#28201b;--muted:#c4b3a2;--accent:#b94b36;--line:#594638}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top,#38271e,#171311 65%);color:#f7eee4;font:16px system-ui,sans-serif;padding:env(safe-area-inset-top) 14px env(safe-area-inset-bottom)}
+main{max-width:1000px;margin:auto;padding:18px 0 40px}.head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}h1{font-size:clamp(23px,5vw,34px);margin:0}.sub,.muted{color:var(--muted);font-size:12px}
+button,input,textarea,select{font:inherit}button{border:1px solid var(--line);background:#332720;color:#fff4e8;padding:10px 13px;border-radius:10px;cursor:pointer}button.primary{background:var(--accent);border-color:var(--accent);font-weight:700}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;margin:17px 0 10px}.count{font-size:12px;color:var(--muted);margin:8px 0}
+.board{background-color:#765039;background-image:radial-gradient(#b58b64 .7px,transparent .8px);background-size:13px 13px;border:6px solid #4e3325;border-radius:14px;padding:13px;min-height:220px;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:13px}
+.note{position:relative;color:#29251f;padding:17px 12px 11px;min-height:155px;box-shadow:2px 4px 8px #0008;transform:rotate(var(--tilt));display:flex;flex-direction:column;gap:7px}
+.note:nth-child(5n+1){background:#f4dfa2}.note:nth-child(5n+2){background:#f4bfc1}.note:nth-child(5n+3){background:#d6e4bd}.note:nth-child(5n+4){background:#c6dce9}.note:nth-child(5n){background:#f3d2a8}
+.pin{position:absolute;top:5px;left:calc(50% - 5px);width:10px;height:10px;border-radius:50%;background:#a52e22;box-shadow:0 1px 3px #0008}
+.note input,.note textarea{background:transparent;color:#29251f;border:0;outline:0;width:100%}.note input{font-weight:800;border-bottom:1px solid #776b5a;padding:3px 0}.note textarea{resize:vertical;min-height:70px;font-size:13px;line-height:1.45}
+.note .meta{font-size:11px;font-weight:700;opacity:.7}.note .del{align-self:flex-end;font-size:11px;padding:5px 8px;background:#fff6;color:#29251f;border-color:#66574488}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px;margin-top:15px}.panel h2{font-size:16px;margin:0 0 8px}.field{width:100%;padding:10px;border-radius:9px;border:1px solid var(--line);background:#171311;color:#fff;margin:4px 0 9px}.row{display:grid;grid-template-columns:1fr 1fr;gap:8px}.chips{display:flex;gap:7px;flex-wrap:wrap}.chips button{font-size:12px;padding:7px 9px}.chips button.active{background:var(--accent);border-color:var(--accent)}
+.connection{border:1px dashed #a86c46;border-radius:8px;padding:9px;margin-top:7px;font-size:12px;display:flex;justify-content:space-between;gap:8px;align-items:center}
+.hidden{display:none!important}.footer{font-size:11px;color:var(--muted);margin-top:16px;line-height:1.5}
+@media(max-width:520px){.row{grid-template-columns:1fr}.board{padding:10px;grid-template-columns:1fr 1fr;gap:9px}.note{min-height:150px;padding:16px 9px 9px}.note textarea{font-size:12px}}
+@media(max-width:350px){.board{grid-template-columns:1fr}}
+</style>
+</head>
+<body><main>
+<header class="head"><div><h1>🕯️ THE THEORY ROOM</h1><div class="sub">FROMVILLE • CASE FILES • CLASSIFIED</div></div><div class="sub">🧡 Shelbs' detective HQ</div></header>
+<div class="toolbar"><button class="primary" id="add">＋ Add a theory</button><button id="export">↓ Export backup</button><button id="importBtn">↑ Import backup</button><input id="importFile" type="file" accept="application/json" class="hidden"></div>
+<div class="count" id="count"></div>
+<section class="board" id="board" aria-label="Theory corkboard"></section>
+<section class="panel hidden" id="editor"><h2>📌 New case note</h2><input class="field" id="title" maxlength="80" placeholder="Give your theory a title"><select class="field" id="category"><option>Tabitha</option><option>Boy in White</option><option>Victor</option><option>The Children</option><option>The Creatures</option><option>The Matthews Family</option><option>Boyd & Donna</option><option>Fromville Mysteries</option><option>Other</option></select><textarea class="field" id="body" rows="4" placeholder="Write your theory, clue, question or observation…"></textarea><button class="primary" id="save">Pin to board</button> <button id="cancel">Cancel</button></section>
+<section class="panel"><h2>🧵 Red string connections</h2><div class="muted">Connect two notes that might belong together.</div><div class="row"><select class="field" id="from"></select><select class="field" id="to"></select></div><button class="primary" id="connect">＋ Connect these clues</button><div id="links"></div></section>
+<section class="panel"><h2>📁 Case file categories</h2><div class="chips" id="categories"></div></section>
+<p class="footer">Your notes are stored on this device in this browser. Use Export Backup now and then to keep a copy. If you clear browser data or change phones, import your backup to restore your board. This app does not send your notes anywhere.</p>
+</main>
+<script>
+(()=>{
+const KEY='fromville-theory-room-v2';
+const starter=[
+['Tabitha is OUT!','Tabitha','She woke up in a hospital after climbing the tower. Is she really free?'],
+['Camden, Maine','Tabitha','Could she retrace the Matthews family route from Maine?'],
+['The Fallen Tree','Fromville Mysteries','Is the fallen tree the entrance? Can it be used more than once?'],
+['The Boy in White','Boy in White','Protector, villain, or both? Why did he apologize before pushing Tabitha?'],
+['The Tower','Fromville Mysteries','Why is the tower there? Is it a gateway, a prison, or something else?'],
+['Victor knows more','Victor','How much does Victor understand about the town and the Boy in White?'],
+['Why the Matthews family?','The Matthews Family','Is there something special about this family?'],
+['The Children','The Children','Who are the children, and why are they appearing?'],
+['What is the endgame?','Fromville Mysteries','Can the trapped residents break the cycle? Is there a way out for everyone?']
+];
+let data;try{data=JSON.parse(localStorage.getItem(KEY))}catch(e){}
+let notes=Array.isArray(data?.notes)?data.notes:starter.map((n,i)=>({id:'s'+i,title:n[0],cat:n[1],body:n[2]}));
+let links=Array.isArray(data?.links)?data.links:[];
+let filter='All';const $=id=>document.getElementById(id);
+const cats=['All','Tabitha','Boy in White','Victor','The Children','The Creatures','The Matthews Family','Boyd & Donna','Fromville Mysteries','Other'];
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const persist=()=>localStorage.setItem(KEY,JSON.stringify({notes,links}));
+const uid=()=>Math.random().toString(36).slice(2,10);
+function render(){
+ const shown=notes.filter(n=>filter==='All'||n.cat===filter);
+ $('board').innerHTML=shown.length?shown.map((n,i)=>`<article class="note" style="--tilt:${[-1.2,1,.4,-.7,1.4][i%5]}deg" data-id="${esc(n.id)}"><span class="pin"></span><div class="meta">${esc(n.cat)}</div><input aria-label="Theory title" data-field="title" value="${esc(n.title)}" maxlength="80"><textarea aria-label="Theory notes" data-field="body">${esc(n.body)}</textarea><button class="del" data-delete>🗑 Delete</button></article>`).join(''):'<div style="color:white;padding:20px">No notes here yet. Add a theory! 🕯️</div>';
+ $('count').textContent=`${notes.length} theories • ${shown.length} shown`;
+ $('categories').innerHTML=cats.map(c=>`<button data-cat="${esc(c)}" class="${filter===c?'active':''}">${esc(c)}</button>`).join('');
+ const opts=notes.map(n=>`<option value="${esc(n.id)}">${esc(n.title)}</option>`).join('');
+ $('from').innerHTML=opts;$('to').innerHTML=opts;
+ $('links').innerHTML=links.map((l,i)=>{let a=notes.find(n=>n.id===l.a),b=notes.find(n=>n.id===l.b);return a&&b?`<div class="connection">📌 ${esc(a.title)} <b style="color:#e16b54">━━━━🔴━━━━</b> ${esc(b.title)} <button data-unlink="${i}">Remove</button></div>`:''}).join('')||'<div class="muted" style="margin-top:9px">No connected clues yet.</div>';
+}
+$('add').onclick=()=>{$('editor').classList.remove('hidden');$('title').focus()};
+$('cancel').onclick=()=>{$('editor').classList.add('hidden')};
+$('save').onclick=()=>{let title=$('title').value.trim();if(!title){$('title').focus();return}notes.push({id:uid(),title,cat:$('category').value,body:$('body').value.trim()});$('title').value='';$('body').value='';$('editor').classList.add('hidden');filter='All';persist();render()};
+$('board').addEventListener('input',e=>{let card=e.target.closest('[data-id]'),n=notes.find(x=>x.id===card?.dataset.id);if(n&&e.target.dataset.field){n[e.target.dataset.field]=e.target.value;persist()}});
+$('board').addEventListener('click',e=>{if(!e.target.matches('[data-delete]'))return;let id=e.target.closest('[data-id]').dataset.id;notes=notes.filter(n=>n.id!==id);links=links.filter(l=>l.a!==id&&l.b!==id);persist();render()});
+$('categories').onclick=e=>{let b=e.target.closest('[data-cat]');if(b){filter=b.dataset.cat;render()}};
+$('connect').onclick=()=>{let a=$('from').value,b=$('to').value;if(!a||!b||a===b)return;if(!links.some(l=>(l.a===a&&l.b===b)||(l.a===b&&l.b===a)))links.push({a,b});persist();render()};
+$('links').onclick=e=>{let b=e.target.closest('[data-unlink]');if(b){links.splice(+b.dataset.unlink,1);persist();render()}};
+$('export').onclick=()=>{let blob=new Blob([JSON.stringify({notes,links},null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='fromville-theory-backup.json';a.click();URL.revokeObjectURL(a.href)};
+$('importBtn').onclick=()=>$('importFile').click();
+$('importFile').onchange=async e=>{let f=e.target.files[0];if(!f)return;try{let d=JSON.parse(await f.text());if(!Array.isArray(d.notes)||!Array.isArray(d.links))throw Error();if(confirm('Replace your current board with this backup?')){notes=d.notes;links=d.links;persist();render()}}catch(err){alert('That backup file could not be read.')}e.target.value=''};
+render();
+})();
+</script>
+<script>if('serviceWorker' in navigator && location.protocol.startsWith('http'))navigator.serviceWorker.register('./sw.js').catch(()=>{});</script>
+</body></html>
