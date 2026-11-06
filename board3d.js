@@ -11,9 +11,10 @@
  const svg=document.createElementNS(svgNS,'svg');svg.classList.add('string-overlay');svg.setAttribute('aria-hidden','true');
  board.prepend(svg);
  const controls=document.createElement('div');controls.className='board-controls';
- controls.innerHTML='<button type="button" id="pullString">🧵 Pull a string</button><button type="button" id="zoomOut" aria-label="Zoom out">−</button><span id="zoomLabel">100%</span><button type="button" id="zoomIn" aria-label="Zoom in">＋</button><button type="button" id="fitBoard">Fit board</button><span class="board-help">Choose Pull a string, then drag from one case paper to another.</span>';
+ controls.innerHTML='<button type="button" id="addBoardNote">＋ Add note</button><button type="button" id="pullString">🧵 Pull a string</button><button type="button" id="zoomOut" aria-label="Zoom out">−</button><span id="zoomLabel">100%</span><button type="button" id="zoomIn" aria-label="Zoom in">＋</button><button type="button" id="fitBoard">Fit board</button><span class="board-help">Choose Pull a string, then drag from one case paper to another.</span>';
  board.parentElement.insertBefore(controls,board);
  const $=id=>document.getElementById(id);
+ $('addBoardNote').onclick=()=>{const editor=document.getElementById('editor');editor.classList.remove('hidden');editor.scrollIntoView({behavior:'smooth',block:'center'});document.getElementById('title').focus({preventScroll:true})};
  const colors=()=>document.getElementById('stringColor')?.value||'#e34b3f';
  function positionCards(){
   const cards=[...board.querySelectorAll('.note')];
