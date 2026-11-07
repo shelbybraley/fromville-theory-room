@@ -110,6 +110,17 @@ const starter=[
 let data;try{data=JSON.parse(localStorage.getItem(KEY))}catch(e){}
 let notes=Array.isArray(data?.notes)?data.notes:starter.map((n,i)=>({id:'s'+i,title:n[0],cat:n[1],body:n[2]}));
 let links=Array.isArray(data?.links)?data.links:[];
+// Episode 3x05 theory drop: add these once to existing boards without overwriting personal notes.
+const episodeTheories=[
+{id:'s3e5-dale-reality',title:'Dale: Reality Can Trap You','cat':'Fromville Mysteries','body':'Season 3, Episode 5 — Dale ending up inside the pool wall suggests the town can do more than send monsters after people. Can it reshape physical reality itself, or turn places into traps?'},
+{id:'s3e5-greater-evil',title:'A Greater Evil Behind the Creatures','cat':'The Creatures','body':'Our theory: the night creatures may be only one layer of the horror — possibly servants, agents, or enforcers of a much older and more powerful evil.'},
+{id:'s3e5-living-town',title:'Is the Town Alive?','cat':'Fromville Mysteries','body':'Could Fromville be a living or controlled system that reacts to people and manipulates reality, paths, and outcomes? Dale’s fate makes this feel bigger than monsters simply hunting at night.'},
+{id:'s3e5-who-makes-rules',title:'Who Makes the Rules?','cat':'Fromville Mysteries','body':'What force decides what can happen in Fromville, and why? Are the strange events punishments, warnings, experiments, or deliberate moves by something unseen?'},
+{id:'s3e5-tree-network',title:'The Trees Are Part of a Bigger System','cat':'Fromville Mysteries','body':'The faraway trees may be more than random transportation. Could they be connected to the town’s design — moving people through a network controlled by the greater evil?'},
+{id:'s3e5-centuries-cycle',title:'A Cycle That Has Lasted for Centuries','cat':'Fromville Mysteries','body':'Building on our earlier theory: people may have been trapped here for generations or centuries. Could the town be tied to an old deal, curse, or repeating cycle — with the creatures serving a larger power?'}
+];
+const existingIds=new Set(notes.map(n=>n.id));
+episodeTheories.forEach(n=>{if(!existingIds.has(n.id))notes.push(n)});
 let filter='All';const $=id=>document.getElementById(id);
 const cats=['All','Tabitha','Boy in White','Victor','The Children','The Creatures','The Matthews Family','Boyd & Donna','Fromville Mysteries','Other'];
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
