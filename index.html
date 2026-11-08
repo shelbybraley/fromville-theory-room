@@ -83,7 +83,7 @@ body.plum{--accent:#a77b9b;--line:#755a70;--panel:#302630}
 <header class="head"><div><h1>🕯️ THE THEORY ROOM</h1><div class="sub">FROMVILLE • CASE FILES • CLASSIFIED</div></div><div class="sub">🧡 Shelbs' detective HQ</div></header>
 <div class="cozy-lights" id="fairyLights" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
 <div class="room-tools" aria-label="Room decorations"><strong>🪴 ROOM VIBE</strong><button data-theme="warm" aria-pressed="true"><span class="swatch" style="background:#bd7651"></span>Amber</button><button data-theme="moss" aria-pressed="false"><span class="swatch" style="background:#82956a"></span>Forest</button><button data-theme="plum" aria-pressed="false"><span class="swatch" style="background:#a77b9b"></span>Plum</button><button id="lightsToggle" aria-pressed="true">✨ Lights on</button></div>
-<div class="toolbar"><button class="primary" id="add">＋ Add a theory</button><button id="export">↓ Export backup</button><button id="importBtn">↑ Import backup</button><input id="importFile" type="file" accept="application/json" class="hidden"></div>
+<section class="panel board-switcher"><div class="row" style="align-items:end"><label style="display:block;color:#e8c9a8;font-size:12px">🗂️ CURRENT MYSTERY BOARD<select class="field" id="boardSelect" aria-label="Switch mystery board"></select></label><button id="newBoard" type="button">＋ New board</button></div><div class="muted">Each show has its own notes, red-string connections, and case categories.</div></section><div class="toolbar"><button class="primary" id="add">＋ Add a theory</button><button id="export">↓ Export backup</button><button id="importBtn">↑ Import backup</button><input id="importFile" type="file" accept="application/json" class="hidden"></div>
 <div class="count" id="count"></div>
 <section class="panel" id="connectionPanel"><h2>🧵 Red string connections</h2><div class="muted">Connect two notes that might belong together.</div><div class="row"><select class="field" id="from"></select><select class="field" id="to"></select></div><label style="display:block;color:#e8c9a8;font-size:12px">String color <input id="stringColor" type="color" value="#e34b3f" style="display:block;width:100%;height:38px;margin:6px 0 10px"></label><button class="primary" id="connect">＋ Connect these clues</button><div id="links"></div></section>
 <section class="panel hidden" id="editor"><h2>📌 New case note</h2><input class="field" id="title" maxlength="80" placeholder="Give your theory a title"><select class="field" id="category"><option>Tabitha</option><option>Boy in White</option><option>Victor</option><option>The Children</option><option>The Creatures</option><option>The Matthews Family</option><option>Boyd & Donna</option><option>Fromville Mysteries</option><option>Other</option></select><textarea class="field" id="body" rows="4" placeholder="Write your theory, clue, question or observation…"></textarea><button class="primary" id="save">Pin to board</button> <button id="cancel">Cancel</button></section>
@@ -96,6 +96,7 @@ body.plum{--accent:#a77b9b;--line:#755a70;--panel:#302630}
 <script>
 (()=>{
 const KEY='fromville-theory-room-v2';
+const BOARDS_KEY='mystery-theory-boards-v1';
 const starter=[
 ['Tabitha is OUT!','Tabitha','She woke up in a hospital after climbing the tower. Is she really free?'],
 ['Camden, Maine','Tabitha','Could she retrace the Matthews family route from Maine?'],
@@ -108,8 +109,14 @@ const starter=[
 ['What is the endgame?','Fromville Mysteries','Can the trapped residents break the cycle? Is there a way out for everyone?']
 ];
 let data;try{data=JSON.parse(localStorage.getItem(KEY))}catch(e){}
-let notes=Array.isArray(data?.notes)?data.notes:starter.map((n,i)=>({id:'s'+i,title:n[0],cat:n[1],body:n[2]}));
-let links=Array.isArray(data?.links)?data.links:[];
+const legacyNotes=Array.isArray(data?.notes)?data.notes:starter.map((n,i)=>({id:'s'+i,title:n[0],cat:n[1],body:n[2]}));
+const legacyLinks=Array.isArray(data?.links)?data.links:[];
+let boardStore={};try{boardStore=JSON.parse(localStorage.getItem(BOARDS_KEY)||'{}')||{}}catch(e){boardStore={}}
+if(!boardStore.from)boardStore.from={id:'from',name:'FROM',notes:legacyNotes,links:legacyLinks};
+if(!boardStore.dark)boardStore.dark={id:'dark',name:'DARK',notes:[],links:[]};
+let activeBoard='from';
+let notes=boardStore[activeBoard].notes;
+let links=boardStore[activeBoard].links;
 // Episode 3x05 theory drop: add these once to existing boards without overwriting personal notes.
 const episodeTheories=[
 {id:'s3e5-dale-reality',title:'Dale: Reality Can Trap You','cat':'Fromville Mysteries','body':'Season 3, Episode 5 — Dale ending up inside the pool wall suggests the town can do more than send monsters after people. Can it reshape physical reality itself, or turn places into traps?'},
@@ -129,9 +136,16 @@ const episodeTheories=[
 const existingIds=new Set(notes.map(n=>n.id));
 episodeTheories.forEach(n=>{if(!existingIds.has(n.id))notes.push(n)});
 let filter='All';const $=id=>document.getElementById(id);
+const categoriesFor=()=>activeBoard==='dark'?['All','Winden','The Families','Time Travel','The Cave','Sic Mundus','Theories','Other']:['All','Tabitha','Boy in White','Victor','The Children','The Creatures','The Matthews Family','Boyd & Donna','Fromville Mysteries','Other'];
+let cats=categoriesFor();
+function saveCurrentBoard(){boardStore[activeBoard]={id:activeBoard,name:boardStore[activeBoard].name,notes,links};localStorage.setItem(BOARDS_KEY,JSON.stringify(boardStore));if(activeBoard==='from')localStorage.setItem(KEY,JSON.stringify({notes,links}))}
+function refreshBoardPicker(){const sel=$('boardSelect');if(!sel)return;sel.innerHTML=Object.values(boardStore).map(b=>`<option value="${esc(b.id)}">${esc(b.name)}</option>`).join('');sel.value=activeBoard}
+function switchBoard(id){if(!boardStore[id]||id===activeBoard)return;saveCurrentBoard();activeBoard=id;notes=boardStore[id].notes||[];links=boardStore[id].links||[];filter='All';cats=categoriesFor();render()}
+$('boardSelect').addEventListener('change',e=>switchBoard(e.target.value));
+$('newBoard').addEventListener('click',()=>{const name=prompt('What show are we investigating?');if(!name||!name.trim())return;const clean=name.trim().slice(0,32);const id='board-'+clean.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')+'-'+uid();boardStore[id]={id,name:clean.toUpperCase(),notes:[],links:[]};saveCurrentBoard();activeBoard=id;notes=[];links=[];filter='All';cats=['All','Characters','Clues','Timeline','Locations','Theories','Other'];render()});
 const cats=['All','Tabitha','Boy in White','Victor','The Children','The Creatures','The Matthews Family','Boyd & Donna','Fromville Mysteries','Other'];
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const persist=()=>localStorage.setItem(KEY,JSON.stringify({notes,links}));
+const persist=()=>saveCurrentBoard();
 const uid=()=>Math.random().toString(36).slice(2,10);
 const roomPrefs=(()=>{const base={theme:'warm',lights:true,wall:'#49372d',floor:'#694832',stringColor:'#e34b3f',decor:[]};try{return {...base,...(JSON.parse(localStorage.getItem('fromville-room-v1'))||{})}}catch(e){return base}})();
 function applyRoom(){document.body.classList.remove('warm','moss','plum');document.body.classList.add(roomPrefs.theme||'warm');$('fairyLights').classList.toggle('off',roomPrefs.lights===false);$('lightsToggle').textContent=roomPrefs.lights===false?'✨ Lights off':'✨ Lights on';$('lightsToggle').setAttribute('aria-pressed',String(roomPrefs.lights!==false));document.querySelectorAll('[data-theme]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.theme===roomPrefs.theme)));localStorage.setItem('fromville-room-v1',JSON.stringify(roomPrefs))}
@@ -140,7 +154,9 @@ $('lightsToggle').onclick=()=>{roomPrefs.lights=roomPrefs.lights===false;applyRo
 function render(){
  const shown=notes.filter(n=>filter==='All'||n.cat===filter);
  $('board').innerHTML=shown.length?shown.map((n,i)=>`<article class="note" style="--tilt:${[-1.2,1,.4,-.7,1.4][i%5]}deg" data-id="${esc(n.id)}"><span class="pin"></span><div class="meta">${esc(n.cat)}</div><input aria-label="Theory title" data-field="title" value="${esc(n.title)}" maxlength="80"><textarea aria-label="Theory notes" data-field="body">${esc(n.body)}</textarea><button class="del" data-delete>🗑 Delete</button></article>`).join(''):'<div style="color:white;padding:20px">No notes here yet. Add a theory! 🕯️</div>';
- $('count').textContent=`${notes.length} theories • ${shown.length} shown`;
+ $('count').textContent=`${boardStore[activeBoard].name} • ${notes.length} theories • ${shown.length} shown`;
+ refreshBoardPicker();
+ $('category').innerHTML=cats.filter(c=>c!=='All').map(c=>`<option>${esc(c)}</option>`).join('');
  $('categories').innerHTML=cats.map(c=>`<button data-cat="${esc(c)}" class="${filter===c?'active':''}">${esc(c)}</button>`).join('');
  const opts=notes.map(n=>`<option value="${esc(n.id)}">${esc(n.title)}</option>`).join('');
  $('from').innerHTML=opts;$('to').innerHTML=opts;
@@ -158,6 +174,7 @@ $('export').onclick=()=>{let blob=new Blob([JSON.stringify({notes,links},null,2)
 $('importBtn').onclick=()=>$('importFile').click();
 $('importFile').onchange=async e=>{let f=e.target.files[0];if(!f)return;try{let d=JSON.parse(await f.text());if(!Array.isArray(d.notes)||!Array.isArray(d.links))throw Error();if(confirm('Replace your current board with this backup?')){notes=d.notes;links=d.links;persist();render()}}catch(err){alert('That backup file could not be read.')}e.target.value=''};
 applyRoom();
+refreshBoardPicker();
 render();
 })();
 </script>
