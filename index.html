@@ -143,7 +143,7 @@ function refreshBoardPicker(){const sel=$('boardSelect');if(!sel)return;sel.inne
 function switchBoard(id){if(!boardStore[id]||id===activeBoard)return;saveCurrentBoard();activeBoard=id;notes=boardStore[id].notes||[];links=boardStore[id].links||[];filter='All';cats=categoriesFor();render()}
 $('boardSelect').addEventListener('change',e=>switchBoard(e.target.value));
 $('newBoard').addEventListener('click',()=>{const name=prompt('What show are we investigating?');if(!name||!name.trim())return;const clean=name.trim().slice(0,32);const id='board-'+clean.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')+'-'+uid();boardStore[id]={id,name:clean.toUpperCase(),notes:[],links:[]};saveCurrentBoard();activeBoard=id;notes=[];links=[];filter='All';cats=['All','Characters','Clues','Timeline','Locations','Theories','Other'];render()});
-const cats=['All','Tabitha','Boy in White','Victor','The Children','The Creatures','The Matthews Family','Boyd & Donna','Fromville Mysteries','Other'];
+// Category list is initialized per active board above.
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const persist=()=>saveCurrentBoard();
 const uid=()=>Math.random().toString(36).slice(2,10);
