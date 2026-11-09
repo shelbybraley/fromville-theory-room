@@ -112,8 +112,13 @@ let data;try{data=JSON.parse(localStorage.getItem(KEY))}catch(e){}
 const legacyNotes=Array.isArray(data?.notes)?data.notes:starter.map((n,i)=>({id:'s'+i,title:n[0],cat:n[1],body:n[2]}));
 const legacyLinks=Array.isArray(data?.links)?data.links:[];
 let boardStore={};try{boardStore=JSON.parse(localStorage.getItem(BOARDS_KEY)||'{}')||{}}catch(e){boardStore={}}
-if(!boardStore.from)boardStore.from={id:'from',name:'FROM',notes:legacyNotes,links:legacyLinks};
+if(!boardStore||typeof boardStore!=='object'||Array.isArray(boardStore))boardStore={};
+Object.keys(boardStore).forEach(id=>{const b=boardStore[id];if(!b||typeof b!=='object'||Array.isArray(b))delete boardStore[id];else boardStore[id]={id:b.id||id,name:typeof b.name==='string'&&b.name.trim()?b.name:(id==='from'?'FROM':id==='dark'?'DARK':id.toUpperCase()),notes:Array.isArray(b.notes)?b.notes:[],links:Array.isArray(b.links)?b.links:[]}});
+if(!boardStore.from)boardStore.from={id:'from',name:'FROM',notes:[],links:[]};
 if(!boardStore.dark)boardStore.dark={id:'dark',name:'DARK',notes:[],links:[]};
+if(!boardStore.from.notes.length&&legacyNotes.length)boardStore.from.notes=legacyNotes;
+if(!boardStore.from.links.length&&legacyLinks.length)boardStore.from.links=legacyLinks;
+boardStore.from.name='FROM';boardStore.dark.name='DARK';
 let activeBoard='from';
 let notes=boardStore[activeBoard].notes;
 let links=boardStore[activeBoard].links;
@@ -139,7 +144,7 @@ let filter='All';const $=id=>document.getElementById(id);
 const categoriesFor=()=>activeBoard==='dark'?['All','Winden','The Families','Time Travel','The Cave','Sic Mundus','Theories','Other']:['All','Tabitha','Boy in White','Victor','The Children','The Creatures','The Matthews Family','Boyd & Donna','Fromville Mysteries','Other'];
 let cats=categoriesFor();
 function saveCurrentBoard(){boardStore[activeBoard]={id:activeBoard,name:boardStore[activeBoard].name,notes,links};localStorage.setItem(BOARDS_KEY,JSON.stringify(boardStore));if(activeBoard==='from')localStorage.setItem(KEY,JSON.stringify({notes,links}))}
-function refreshBoardPicker(){const sel=$('boardSelect');if(!sel)return;sel.innerHTML=Object.values(boardStore).map(b=>`<option value="${esc(b.id)}">${esc(b.name)}</option>`).join('');sel.value=activeBoard}
+function refreshBoardPicker(){const sel=$('boardSelect');if(!sel)return;const entries=Object.values(boardStore).filter(b=>b&&typeof b==='object'&&b.id);if(!entries.some(b=>b.id==='from'))entries.unshift(boardStore.from);if(!entries.some(b=>b.id==='dark'))entries.push(boardStore.dark);sel.innerHTML=entries.map(b=>`<option value="${esc(b.id)}">${esc(b.name||b.id.toUpperCase())}</option>`).join('');if(!entries.some(b=>b.id===activeBoard))activeBoard='from';sel.value=activeBoard}
 function switchBoard(id){if(!boardStore[id]||id===activeBoard)return;saveCurrentBoard();activeBoard=id;notes=boardStore[id].notes||[];links=boardStore[id].links||[];filter='All';cats=categoriesFor();render()}
 $('boardSelect').addEventListener('change',e=>switchBoard(e.target.value));
 $('newBoard').addEventListener('click',()=>{const name=prompt('What show are we investigating?');if(!name||!name.trim())return;const clean=name.trim().slice(0,32);const id='board-'+clean.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')+'-'+uid();boardStore[id]={id,name:clean.toUpperCase(),notes:[],links:[]};saveCurrentBoard();activeBoard=id;notes=[];links=[];filter='All';cats=['All','Characters','Clues','Timeline','Locations','Theories','Other'];render()});
@@ -174,8 +179,8 @@ $('export').onclick=()=>{let blob=new Blob([JSON.stringify({notes,links},null,2)
 $('importBtn').onclick=()=>$('importFile').click();
 $('importFile').onchange=async e=>{let f=e.target.files[0];if(!f)return;try{let d=JSON.parse(await f.text());if(!Array.isArray(d.notes)||!Array.isArray(d.links))throw Error();if(confirm('Replace your current board with this backup?')){notes=d.notes;links=d.links;persist();render()}}catch(err){alert('That backup file could not be read.')}e.target.value=''};
 applyRoom();
-refreshBoardPicker();
 render();
+saveCurrentBoard();
 })();
 </script>
 <script>if('serviceWorker' in navigator && location.protocol.startsWith('http'))navigator.serviceWorker.register('./sw.js').catch(()=>{});</script>
